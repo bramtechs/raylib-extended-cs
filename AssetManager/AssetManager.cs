@@ -59,6 +59,16 @@ namespace RaylibExt
 
         }
         
+        public void DrawAssetList()
+        {
+            string text = "";
+            foreach (var asset in loadedAssets)
+            {
+                text += $"{asset.Key}                 {asset.Value}\n";
+            }
+            Raylib.DrawText(text, 250, 5, 14, Color.SKYBLUE);
+        }
+
         public Texture2D GetTexture(string name)
 		{
             if (loadedAssets.ContainsKey(name))
@@ -72,6 +82,20 @@ namespace RaylibExt
             }
             Raylib.TraceLog(TraceLogLevel.LOG_WARNING,$"Texture {name} doesn't exist!");
 		    return _placeHolder;
+        }
+
+        public List<T> GetAllAssetsOfType<T>() where T : Asset
+        {
+            List<T> assets = new List<T>();
+            foreach (var asset in loadedAssets)
+            {
+                if (asset.Value.GetType() == typeof(T))
+                {
+                    T valid = (T)asset.Value;
+                    assets.Add(valid);
+                }
+            }
+            return assets;
         }
 
         public void Dispose()

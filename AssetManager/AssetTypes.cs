@@ -14,6 +14,7 @@ namespace RaylibExt
             _sourcePath = sourcePath;
         }
         public abstract void Dispose();
+        public override string ToString() => $"{(this.GetType().Name)}       {_sourcePath}";
     }
     public class TextureAsset : Asset 
     {
