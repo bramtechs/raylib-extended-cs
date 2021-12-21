@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using RaylibExtendedCS;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -79,32 +80,15 @@ namespace RaylibExt
 
     }
     // Handy in situations you don't know how many widgets you need.
-    public class WidgetHeap
+    public class WidgetHeap : Heap<IWidget>
     {
-        private Dictionary<object, IWidget> _widgets;
-
-        public WidgetHeap()
-        {
-            _widgets = new Dictionary<object, IWidget>();
-        }
-
-        private T GetExisting<T>(object owner) where T : IWidget
-        {
-            if (_widgets.ContainsKey(owner))
-            {
-                return (T)_widgets[owner];
-            }
-            return default;
-        }
-
         public Button DrawButton(object owner, Rectangle region, Color? color, string text = "")
         {
-            Button? button = GetExisting<Button>(owner);
-            if (button == null)
+            Button? button = (Button) GetExisting(owner);
+            if (button == null) // the owner doesn't have a button assigned yet
             {
                 button = new Button(region, color, text);
-                _widgets.Add(owner, button);
-                Raylib.TraceLog(TraceLogLevel.LOG_DEBUG, $"Allocated button for {owner}");
+                Register(owner, button);
             }
             button.Draw();
             return button;

@@ -11,6 +11,7 @@ namespace RaylibExt
         private static float _scale;
         private static int _screenWidth;
         private static int _screenHeight;
+        private static uint _curFrame;
 
         // Clamp Vector2 value with min and max and return a new vector2
         // NOTE: Required for virtual mouse, to clamp inside virtual game size
@@ -98,6 +99,7 @@ namespace RaylibExt
                 (Raylib.GetScreenWidth() - (_size.X * scale)) * 0.5f, (Raylib.GetScreenHeight() - (_size.Y * scale)) * 0.5f,
             _size.X * scale, _size.Y * scale
     ), Vector2.Zero, 0.0f, Color.WHITE);
+            _curFrame++;
         }
 
         // Multiply the dimensions of the window
@@ -144,5 +146,8 @@ namespace RaylibExt
             Raylib.SetWindowPosition(x, y);
             Raylib.TraceLog(TraceLogLevel.LOG_INFO, $"Recentered window at {x}:{y} ({monCount} monitors)");
         }
+
+        // Get's how many frames have been drawn
+        public static uint GetFrame() => _curFrame;
     }
 }
