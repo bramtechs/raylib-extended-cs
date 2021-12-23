@@ -23,10 +23,12 @@ namespace RaylibExt
         private bool _enabled;
         private Font _font;
         private int _fontSize;
+
         public string Text => _text;
         public Rectangle Region => _region;
         public bool Enabled => _enabled;
         public int FontSize => _fontSize;
+
         public Action? OnClicked;
 
         public Button(Rectangle region, Color? color = null, string text = "")

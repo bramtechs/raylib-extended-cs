@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Raylib_cs;
 using System.IO;
 
-namespace RaylibExt 
+namespace RaylibExt
 {
-    public static partial class Utils
+	public static partial class Utils
     {
         public static List<string> CrawlDirectory(string path)
         {
             List<string> paths = new List<string>();
             // get deeper directories in directory
+            if (!Directory.Exists(path))
+			{
+                Raylib.TraceLog(TraceLogLevel.LOG_WARNING,$"Folder {path} doesn't exist, can't crawl");
+                return paths;
+			}
             foreach (string subPath in Directory.GetDirectories(path))
             {
                 List<string> subPaths = CrawlDirectory(subPath);
@@ -23,5 +26,17 @@ namespace RaylibExt
             return paths;
         }
         
+        public static string ReadFileInDirectory(string path)
+		{
+			foreach (var file in Directory.GetFiles(path))
+			{
+                if (file.Contains(path))
+				{
+                    string content = File.ReadAllText(file);
+                    return content;
+				}
+			}
+            return null;
+		}
     }
 }
