@@ -17,27 +17,50 @@ namespace RaylibExt
         private int cellsX;
         private int cellsY;
 
+        private int offsetX;
+        private int offsetY;
+
+        private int CurFrame {get {return curFrame;} set{curFrame = value % cellsX*cellsY;}}
+
+        private int curFrame;
+
         private Rectangle[] cell_src;
         private Texture2D? texture;
 
-        public Animation(string name, int cellWidth, int cellHeight)
+        // playback
+
+        public float Interval {get; set;}
+        private float timer;
+
+        public Animation(string name, int cellWidth, int cellHeight, float interval = 0.25f)
         {
             Name = name;
             cellW = cellWidth;
             cellH = cellHeight;
+            offsetX = 0;
+            offsetY = 0;
+            Interval = interval;
         }
 
-        public Animation(string name, int startX, int startY, int cellWidth,int cellHeight, int cellsX, int cellsY)
+        public Animation(string name, int cellWidth,int cellHeight, int startX, int startY, int cellsX, int cellsY, float interval = 0.25f)
 		{
-
+            Name = name;
+            this.offsetX = startX;
+            this.offsetY = startY;
+            this.cellsX = cellsX;
+            this.cellsY = cellsY;
+            cellW = cellWidth;
+            cellH = cellHeight;
+            Interval = interval;
 		}
 
         public void GenerateCells(Texture2D texture)
 		{
             this.texture = texture;
-            cellsX = texture.width / cellW;
-            cellsY = texture.height / cellH;
-            
+            if (cellsX == 0 && cellsY == 0){
+                cellsX = texture.width / cellW;
+                cellsY = texture.height / cellH;
+            }
             cell_src = new Rectangle[cellsX * cellsY];
             Raylib.TraceLog(TraceLogLevel.LOG_INFO, $"New animation {Name} has ({cellsX}:{cellsY}) cells");
 
@@ -47,25 +70,36 @@ namespace RaylibExt
                 for (int x = 0; x < cellsX; x++)
                 {
                     int i = y * cellsX + x;
-                    cell_src[i] = new Rectangle(x * cellW, y * cellH, cellW, cellH);
+                    int xx = x + offsetX;
+                    int yy = y + offsetY;
+                    cell_src[i] = new Rectangle(xx * cellW, yy * cellH, cellW, cellH);
                 }
             }
             Raylib.TraceLog(TraceLogLevel.LOG_DEBUG, $"Generated cells for animation {Name}");
         }
 
-        public bool DrawCell(Vector2 pos, ushort cellID)
+        public void Reset(){
+            timer = 0;
+        }
+
+        public bool Draw(Vector2 pos)
         {
             if (texture == null)
 			{
                 Raylib.TraceLog(TraceLogLevel.LOG_ERROR,$"Animation {Name} not yet initialized!");
                 return false;
 			}
-            if (cellID < 0 || cellID >= cellsX * cellsY)
+            if (CurFrame < 0 || CurFrame >= cellsX * cellsY)
             {
                 return false;
             }
-            Rectangle source = cell_src[cellID];
+            Rectangle source = cell_src[CurFrame];
             Raylib.DrawTextureRec(texture.Value,source, pos, Color.WHITE);
+            timer += Raylib.GetFrameTime();
+            if (timer > Interval){
+                timer = 0;
+                CurFrame++;
+            }
             return true;
         }
     }

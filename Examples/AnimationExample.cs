@@ -19,8 +19,14 @@ namespace RaylibExt
             
             Sprite placeHolder = new Sprite("Assets/Gfx/invalid.png");
             TextureLoader loader = new TextureLoader("Assets/Gfx",placeHolder);
-            Sprite sprite = loader.GetAsset("character_robot_sheet");
-            sprite.Position = new Vector2(10,10);
+
+            Sprite sprite = loader.GetAsset("character_robot_sheet").AddAnimations(new Animation[]{
+                new Animation("idleing",96,128,0,0,1,1),
+                new Animation("running",96,128,6,2,3,1),
+                new Animation("climbing",96,128,5,0,2,1),
+                new Animation("jumping",96,128,0,0,3,1),
+                });
+            sprite.Position = new Vector2(350,50);
 
             SetTargetFPS(60);
 
@@ -29,9 +35,24 @@ namespace RaylibExt
             {
                 BeginDrawing();
                 ClearBackground(RAYWHITE);
+                
+                string curAnimation = "idleing";
+                if (Raylib.IsKeyDown(KeyboardKey.KEY_D)){
+                    curAnimation = "running";
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.KEY_A)){
+                    curAnimation = "running";
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.KEY_SPACE)){
+                    curAnimation = "jumping";
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.KEY_W)){
+                    curAnimation = "climbing";
+                }
 
-                DrawText("Congrats! You created your first window!", 190, 200, 20, MAROON);
-                sprite.Draw();
+
+                DrawText($"You should see a robot {curAnimation}!", 190, 200, 20, MAROON);
+                sprite.Draw(curAnimation);
 
                 EndDrawing();
             }

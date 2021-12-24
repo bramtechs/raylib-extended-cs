@@ -11,24 +11,10 @@ namespace RaylibExt
 		public Vector2 Position { get; set; }
 
 		public Texture2D Texture { get; private set; }
-		public string CurrentAnimation
-		{
-			get {return currentAnim;}
-			set
-			{
-				if (animations.ContainsKey(value))
-				{
-					CurrentAnimation = value;
-				}
-				else
-				{
-					Raylib.TraceLog(TraceLogLevel.LOG_WARNING, $"No animation named {value} exists!");
-				}
-			}
-		}
 		
 		private Dictionary<string, Animation> animations;
-		private string currentAnim;
+
+		private string prevAnimation;
 
 		public Sprite(string texturePath, Animation[] animations = null)
 		{
@@ -43,20 +29,34 @@ namespace RaylibExt
 				}
 			}
 			AddAnimation(new Animation("none",Texture.width,Texture.height));
-			currentAnim = "none";
 		}
 
-		public void AddAnimation(Animation animation)
+		public Sprite AddAnimation(Animation animation)
 		{
 			this.animations.Add(animation.Name, animation);
 			animation.GenerateCells(Texture);
+			return this;
+		}
+		public Sprite AddAnimations(Animation[] animations){
+			foreach (Animation anim in animations){
+				AddAnimation(anim);
+			}
+			return this;
 		}
 
-		public void Draw()
+		public void Draw(string anim = "none")
 		{
-			if (animations.ContainsKey(currentAnim))
+			// Resets the previous animation when parameter changed
+			if (prevAnimation == null){
+				prevAnimation = anim;
+			}else if (prevAnimation != anim){
+				animations[prevAnimation].Reset();
+				prevAnimation = anim;
+			}
+
+			if (animations.ContainsKey(anim))
 			{
-				animations[currentAnim].DrawCell(Position, 0);
+				animations[anim].Draw(Position);
 			}
 		}
 
