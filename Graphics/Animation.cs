@@ -102,5 +102,11 @@ namespace RaylibExt
             }
             return true;
         }
+
+        public bool DrawCell(Vector2 pos, int frameID){
+            Rectangle source = cell_src[frameID];
+            Raylib.DrawTextureRec(texture.Value,source,pos,Color.WHITE);
+            return true;
+        }
     }
 }

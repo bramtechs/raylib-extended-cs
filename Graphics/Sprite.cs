@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using Raylib_cs;
+using System.Diagnostics;
 
 namespace RaylibExt
 {
@@ -68,6 +68,9 @@ namespace RaylibExt
 			}
 			Raylib.TraceLog(TraceLogLevel.LOG_WARNING, $"Animation {name} doesn't exist!");
 			return null;
+		}
+		public Animation GetDefaultAnimation(){
+			return GetAnimation("none");
 		}
 
 		public void Dispose()
